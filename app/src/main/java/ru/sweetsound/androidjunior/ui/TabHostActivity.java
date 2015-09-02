@@ -49,33 +49,6 @@ public class TabHostActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_tab_host, menu);
-        return true;
-    }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.menu_add) {
-            addItem();
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    public void addItem(){
-        ElementDialogFragment dialog = new ElementDialogFragment();
-      //  Bundle bundle = new Bundle();
-      //  bundle.putString(ElementDialogFragment.DATA_KEY,s);
-       // dialog.setArguments(bundle);
-        dialog.show(getFragmentManager(),null);
-
-    }
 }
