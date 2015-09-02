@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Android Junior</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- tabs -->
+    <string name="tab_list">List</string>
+    <string name="tab_scaling">Scaling</string>
+    <string name="tab_service">Service</string>
+    <string name="tab_map">Map</string>
+    <string name="tab_list_tag">TabList</string>
+    <string name="tab_scaling_tag">TabScaling</string>
+    <string name="tab_service_tag">TabService</string>
+    <string name="tab_map_tag">TabMap</string>
+</resources>
