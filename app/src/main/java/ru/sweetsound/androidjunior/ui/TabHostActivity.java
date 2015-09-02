@@ -1,7 +1,7 @@
 package ru.sweetsound.androidjunior.ui;
 
-import android.app.AlertDialog;
-import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.FragmentTabHost;
+
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,42 +14,34 @@ import ru.sweetsound.androidjunior.R;
 
 public class TabHostActivity extends AppCompatActivity {
 
-    private TabHost mTabHost = null;
+    private FragmentTabHost mTabHost = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_tab_host);
-        if (mTabHost == null) initTabHost();
+       // if (mTabHost == null)
+            initTabHost();
     }
 
     private void initTabHost(){
-        mTabHost = (TabHost) findViewById(android.R.id.tabhost);
-        mTabHost.setup();
-        TabHost.TabSpec listTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_list_tag))
-                .setIndicator(getResources().getString(R.string.tab_list))
-                .setContent(R.id.list_tab_fragment);
+        mTabHost = (FragmentTabHost) findViewById(android.R.id.tabhost);
+        mTabHost.setup(this, getSupportFragmentManager(), android.R.id.tabcontent);
 
-        TabHost.TabSpec scaleTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_scaling_tag))
-                .setIndicator(getResources().getString(R.string.tab_scaling))
-                .setContent(R.id.scaling_tab_fragment);
+        mTabHost.addTab(mTabHost.newTabSpec(getResources().getString(R.string.tab_list_tag))
+                        .setIndicator(getResources().getString(R.string.tab_list), null),
+                        ListTabFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec(getResources().getString(R.string.tab_scaling_tag))
+                        .setIndicator(getResources().getString(R.string.tab_scaling), null),
+                        ScaleTabFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec(getResources().getString(R.string.tab_service_tag))
+                        .setIndicator(getResources().getString(R.string.tab_service), null),
+                        ServiceTabFragment.class, null);
+        mTabHost.addTab(mTabHost.newTabSpec(getResources().getString(R.string.tab_map_tag))
+                        .setIndicator(getResources().getString(R.string.tab_map), null),
+                        MapTabFragment.class, null);
 
-        TabHost.TabSpec serviceTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_service_tag))
-                .setIndicator(getResources().getString(R.string.tab_service))
-                .setContent(R.id.service_tab_fragment);
 
-        TabHost.TabSpec mapTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_map_tag))
-                .setIndicator(getResources().getString(R.string.tab_map))
-                .setContent(R.id.map_tab_fragment);
-
-        mTabHost.addTab(listTabSpec);
-        mTabHost.addTab(scaleTabSpec);
-        mTabHost.addTab(serviceTabSpec);
-        mTabHost.addTab(mapTabSpec);
         mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
             public void onTabChanged(String tabId) {
                 Toast.makeText(getBaseContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();

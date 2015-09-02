@@ -25,7 +25,7 @@ public class ElementDialogFragment extends DialogFragment implements DialogInter
         Bundle bundle = getArguments();
         LayoutInflater inflater = LayoutInflater.from(getActivity());
         View v = inflater.inflate(R.layout.fragment_element_dialog, null);
-        if (bundle.getString(DATA_KEY)!=null)
+        if (bundle!=null && bundle.getString(DATA_KEY)!=null)
             ((EditText) v.findViewById(R.id.dialog_edit)).setText(bundle.getString(DATA_KEY));
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity())

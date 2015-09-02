@@ -1,6 +1,6 @@
 package ru.sweetsound.androidjunior.ui;
 
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.os.Build;
 import android.support.v4.app.Fragment;
@@ -32,6 +32,7 @@ public class ListTabFragment extends ListFragment {
     }
 
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         ListTabAdapter adapter = new ListTabAdapter(getActivity(),
                 R.layout.list_item,
                 R.id.item_text);

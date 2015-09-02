@@ -2,42 +2,29 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin">
-    <TabHost
+    <android.support.v4.app.FragmentTabHost
         android:id="@android:id/tabhost"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
             <TabWidget
                 android:id="@android:id/tabs"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"/>
             <FrameLayout
                 android:id="@android:id/tabcontent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content">
-                <fragment  android:id="@+id/list_tab_fragment"
-                    android:name="ru.sweetsound.androidjunior.ui.ListTabFragment"
-                    tools:layout="@layout/fragment_list_tab" android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-                <fragment  android:id="@+id/scaling_tab_fragment"
-                    android:name="ru.sweetsound.androidjunior.ui.ScaleTabFragment"
-                    tools:layout="@layout/fragment_list_tab" android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-                <fragment  android:id="@+id/service_tab_fragment"
-                    android:name="ru.sweetsound.androidjunior.ui.ServiceTabFragment"
-                    tools:layout="@layout/fragment_list_tab" android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-                <fragment  android:id="@+id/map_tab_fragment"
-                    android:name="ru.sweetsound.androidjunior.ui.MapTabFragment"
-                    tools:layout="@layout/fragment_list_tab" android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </FrameLayout>
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"/>
         </LinearLayout>
-    </TabHost>
+    </android.support.v4.app.FragmentTabHost>
 </LinearLayout>
