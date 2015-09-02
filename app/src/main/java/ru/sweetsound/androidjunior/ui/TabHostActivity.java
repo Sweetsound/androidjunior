@@ -1,5 +1,6 @@
 package ru.sweetsound.androidjunior.ui;
 
+import android.app.AlertDialog;
 import android.support.v4.app.FragmentTransaction;
 
 import android.support.v7.app.AppCompatActivity;
@@ -26,23 +27,23 @@ public class TabHostActivity extends AppCompatActivity {
         mTabHost = (TabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup();
         TabHost.TabSpec listTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_list_tag));
-        listTabSpec.setIndicator(getResources().getString(R.string.tab_list))
+                getString(R.string.tab_list_tag))
+                .setIndicator(getResources().getString(R.string.tab_list))
                 .setContent(R.id.list_tab_fragment);
 
         TabHost.TabSpec scaleTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_scaling_tag));
-        scaleTabSpec.setIndicator(getResources().getString(R.string.tab_scaling))
+                getString(R.string.tab_scaling_tag))
+                .setIndicator(getResources().getString(R.string.tab_scaling))
                 .setContent(R.id.scaling_tab_fragment);
 
         TabHost.TabSpec serviceTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_service_tag));
-        serviceTabSpec.setIndicator(getResources().getString(R.string.tab_service))
+                getString(R.string.tab_service_tag))
+                .setIndicator(getResources().getString(R.string.tab_service))
                 .setContent(R.id.service_tab_fragment);
 
         TabHost.TabSpec mapTabSpec = mTabHost.newTabSpec(getResources().
-                getString(R.string.tab_map_tag));
-        mapTabSpec.setIndicator(getResources().getString(R.string.tab_map))
+                getString(R.string.tab_map_tag))
+                .setIndicator(getResources().getString(R.string.tab_map))
                 .setContent(R.id.map_tab_fragment);
 
         mTabHost.addTab(listTabSpec);
@@ -71,10 +72,18 @@ public class TabHostActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.menu_add) {
+            addItem();
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void addItem(){
+        ElementDialogFragment dialog = new ElementDialogFragment();
+      //  Bundle bundle = new Bundle();
+      //  bundle.putString(ElementDialogFragment.DATA_KEY,s);
+       // dialog.setArguments(bundle);
+        dialog.show(getFragmentManager(),null);
+
     }
 }

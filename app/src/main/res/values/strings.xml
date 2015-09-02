@@ -1,7 +1,5 @@
 <resources>
     <string name="app_name">Android Junior</string>
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
 
     <!-- tabs -->
     <string name="tab_list">List</string>
@@ -12,6 +10,20 @@
     <string name="tab_scaling_tag">TabScaling</string>
     <string name="tab_service_tag">TabService</string>
     <string name="tab_map_tag">TabMap</string>
+
+    <!--menu-->
+    <string name="menu_add">Add</string>
+
+    <!--element_dialog_fragment-->
+    <string name="done">Done</string>
+    <string name="revert">Revert</string>
+
+    <!--list_tab_fragment-->
+    <string name="no_data">No data</string>
+    
+    <!--list_item-->
+    <string name="item_desc">Y.O.B.A</string>
+
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
