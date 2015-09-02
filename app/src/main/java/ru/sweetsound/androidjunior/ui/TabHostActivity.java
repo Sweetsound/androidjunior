@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TabHost;
+import android.widget.Toast;
 
 import ru.sweetsound.androidjunior.R;
 
@@ -22,12 +23,37 @@ public class TabHostActivity extends AppCompatActivity {
     }
 
     private void initTabHost(){
-        mTabHost = (TabHost) findViewById(R.id.tabhost);
+        mTabHost = (TabHost) findViewById(android.R.id.tabhost);
         mTabHost.setup();
         TabHost.TabSpec listTabSpec = mTabHost.newTabSpec(getResources().
                 getString(R.string.tab_list_tag));
-        listTabSpec.setIndicator(getResources().getString(R.string.tab_list));
+        listTabSpec.setIndicator(getResources().getString(R.string.tab_list))
+                .setContent(R.id.list_tab_fragment);
 
+        TabHost.TabSpec scaleTabSpec = mTabHost.newTabSpec(getResources().
+                getString(R.string.tab_scaling_tag));
+        scaleTabSpec.setIndicator(getResources().getString(R.string.tab_scaling))
+                .setContent(R.id.scaling_tab_fragment);
+
+        TabHost.TabSpec serviceTabSpec = mTabHost.newTabSpec(getResources().
+                getString(R.string.tab_service_tag));
+        serviceTabSpec.setIndicator(getResources().getString(R.string.tab_service))
+                .setContent(R.id.service_tab_fragment);
+
+        TabHost.TabSpec mapTabSpec = mTabHost.newTabSpec(getResources().
+                getString(R.string.tab_map_tag));
+        mapTabSpec.setIndicator(getResources().getString(R.string.tab_map))
+                .setContent(R.id.map_tab_fragment);
+
+        mTabHost.addTab(listTabSpec);
+        mTabHost.addTab(scaleTabSpec);
+        mTabHost.addTab(serviceTabSpec);
+        mTabHost.addTab(mapTabSpec);
+        mTabHost.setOnTabChangedListener(new TabHost.OnTabChangeListener() {
+            public void onTabChanged(String tabId) {
+                Toast.makeText(getBaseContext(), "tabId = " + tabId, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
