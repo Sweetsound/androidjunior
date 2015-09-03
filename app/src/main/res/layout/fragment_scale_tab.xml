@@ -17,5 +17,11 @@
         android:layout_height="wrap_content"
         android:background="@drawable/camera_button"
         android:contentDescription="@string/take_photo_desc"/>
+    <ImageView
+        android:id="@+id/imgView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1" >
+    </ImageView>
 
 </RelativeLayout>

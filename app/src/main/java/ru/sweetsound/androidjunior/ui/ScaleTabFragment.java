@@ -2,6 +2,7 @@ package ru.sweetsound.androidjunior.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
@@ -20,11 +21,13 @@ import ru.sweetsound.androidjunior.R;
 public class ScaleTabFragment extends Fragment {
 
     private static int GALLERY_IMAGE = 1;
+    private ImageView imgView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scale_tab, container, false);
+        imgView = (ImageView) view.findViewById(R.id.imgView);
         ((ImageView) view.findViewById(R.id.open_gallery))
                 .setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,13 +58,31 @@ public class ScaleTabFragment extends Fragment {
                 // Get the Image from data
 
                 Uri selectedImage = data.getData();
+                //Intent intent = new Intent(getActivity(),ImageActivity.class);
+                //intent.putExtra(ImageActivity.EXTRA_IMAGE,selectedImage);
+                //startActivity(intent);
                 String[] filePathColumn = { MediaStore.Images.Media.DATA };
+
+                // Get the cursor
+                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                        filePathColumn, null, null, null);
+                // Move to first row
+                cursor.moveToFirst();
+
+                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+                String imgDecodableString = cursor.getString(columnIndex);
+                cursor.close();
+
+                // Set the Image in ImageView after decoding the String
+                imgView.setImageBitmap(BitmapFactory
+                        .decodeFile(imgDecodableString));
 
             } else {
                 Toast.makeText(getContext(), "You haven't picked Image", Toast.LENGTH_LONG).show();
             }
         } catch (Exception e) {
             Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
 
     }
