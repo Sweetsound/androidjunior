@@ -4,6 +4,7 @@ import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import ru.sweetsound.androidjunior.R;
 import ru.sweetsound.androidjunior.utils.DataListener;
@@ -28,6 +30,7 @@ import ru.sweetsound.androidjunior.utils.DataListener;
 public class ListTabFragment extends ListFragment implements DataListener{
 
     public final static int LIST_FRAGMENT = 1;
+    private final static String TAG = "ListTabFragment.java";
     private ArrayList<String> array;
     private ListTabAdapter mAdapter;
     public ListTabFragment() {
@@ -67,9 +70,12 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        ArrayList<String> array = new ArrayList<>();
+        //T0D0 fill from file
          mAdapter = new ListTabAdapter(getActivity(),
                 R.layout.list_item,
-                R.id.item_text);
+                R.id.item_text,
+                 array);
         setListAdapter(mAdapter);
 
     }
@@ -94,14 +100,12 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
     @Override
     public void onChange(int position, String newData) {
-        mAdapter.insert(newData, position);
-        mAdapter.notifyDataSetChanged();
+        mAdapter.insertIntoArray(newData, position);
     }
 
     @Override
     public void onAdd(String newData) {
-        mAdapter.add(newData);
-        mAdapter.notifyDataSetChanged();
+        mAdapter.addToArray(newData);
     }
 
 
@@ -109,21 +113,33 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
         LayoutInflater mInflater;
         private Context mContext;
-        private int mResource;
+        private ArrayList<String> mArray;
 
-        public ListTabAdapter(Context context, int resource, int textViewResourceId) {
-            super(context, resource, textViewResourceId);
+        public ListTabAdapter(Context context, int resource, int textViewResourceId, ArrayList<String> array) {
+            super(context, resource, textViewResourceId, array);
             mInflater = LayoutInflater.from(context);
-            mResource = resource;
             mContext = context;
+            mArray = array;
+        }
+
+        public void insertIntoArray(String newData, int position){
+           // Log.i(TAG,"insert into array position" + position);
+         //   insert(newData, position);
+            mArray.set(position, newData);
+            notifyDataSetChanged();
+        }
+
+        public void addToArray(String newData){
+         //   add(newData);
+         //   Log.i(TAG,"add to array");
+            mArray.add(newData);
+            notifyDataSetChanged();
         }
 
         @Override
         public View getView(final int position, final View convertView, ViewGroup parent) {
-            if (convertView == null) {
-                final View v = mInflater.inflate(mResource, parent, false);
+                final View v = super.getView(position,convertView,parent);
                 final TextView textView = (TextView) v.findViewById(R.id.item_text);
-
                 ((CheckBox) v.findViewById(R.id.list_checkbox))
                         .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
@@ -138,20 +154,19 @@ public class ListTabFragment extends ListFragment implements DataListener{
                                 else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                                     image.setImageDrawable(mContext.
                                             getDrawable(R.drawable.yoba));
-                                    else image.setImageDrawable(mContext.getResources().
-                                                getDrawable(R.drawable.yoba));
+                                else image.setImageDrawable(mContext.getResources().
+                                            getDrawable(R.drawable.yoba));
                             }
                         });
 
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        changeItem(position, textView.getText().toString());
+                        Log.i(TAG,"on click" + position);
+                        changeItem(position,textView.getText().toString());
                     }
                 });
                 return v;
-            }
-            return convertView;
         }
 
 
