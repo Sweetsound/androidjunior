@@ -58,12 +58,7 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
         if (id == R.id.menu_add) {
             addItem();
         }
@@ -92,8 +87,8 @@ public class ListTabFragment extends ListFragment implements DataListener{
     }
 
     @Override
-    public void onDestroyView(){
-        super.onDestroyView();
+    public void onStop(){
+        super.onStop();
         mSerializer.serialize(FILE_ARRAY, mArray);
     }
 

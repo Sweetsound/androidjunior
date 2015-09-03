@@ -30,6 +30,10 @@
     <!--list_item-->
     <string name="item_desc">Y.O.B.A</string>
 
+    <!--scale_tab_fragment-->
+    <string name="gallery_open_desc">Open gallery</string>
+    <string name="take_photo_desc">Take photo</string>
+
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -14,7 +14,6 @@ import java.util.ArrayList;
 public class Serializer<T extends Serializable> {
 
     public void serialize(String file, T target){
-        Log.i("dsda", file);
         ObjectOutputStream oos = null;
         FileOutputStream fos = null;
         try {
