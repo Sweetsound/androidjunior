@@ -1,5 +1,8 @@
 package ru.sweetsound.androidjunior.ui;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.os.Environment;
 import android.support.v4.app.ListFragment;
 import android.content.Context;
 import android.os.Build;
@@ -23,6 +26,7 @@ import java.util.Objects;
 
 import ru.sweetsound.androidjunior.R;
 import ru.sweetsound.androidjunior.utils.DataListener;
+import ru.sweetsound.androidjunior.utils.Serializer;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -31,8 +35,13 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
     public final static int LIST_FRAGMENT = 1;
     private final static String TAG = "ListTabFragment.java";
-    private ArrayList<String> array;
+    private String FILE_ARRAY;
+    static {
+
+    }
+    private ArrayList<String> mArray;
     private ListTabAdapter mAdapter;
+    private Serializer<ArrayList<String>> mSerializer;
     public ListTabFragment() {
     }
 
@@ -70,19 +79,27 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        ArrayList<String> array = new ArrayList<>();
-        //T0D0 fill from file
-         mAdapter = new ListTabAdapter(getActivity(),
+        mSerializer = new Serializer<>();
+        FILE_ARRAY = getContext().getFilesDir().getAbsolutePath()+"/array";
+        mArray = mSerializer.deserialize(FILE_ARRAY);
+        if (mArray == null) mArray = new ArrayList<>();
+        mAdapter = new ListTabAdapter(getActivity(),
                 R.layout.list_item,
                 R.id.item_text,
-                 array);
+                mArray);
         setListAdapter(mAdapter);
 
     }
 
+    @Override
+    public void onDestroyView(){
+        super.onDestroyView();
+        mSerializer.serialize(FILE_ARRAY, mArray);
+    }
+
     public void addItem(){
         ElementDialogFragment dialog = new ElementDialogFragment();
-        dialog.setTargetFragment(this,LIST_FRAGMENT);
+        dialog.setTargetFragment(this, LIST_FRAGMENT);
         dialog.show(getFragmentManager(), null);
 
     }
@@ -109,6 +126,28 @@ public class ListTabFragment extends ListFragment implements DataListener{
     }
 
 
+    private void showContextMenu(final String data, final int position){
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
+                .setMessage(getResources().getString(R.string.context_menu_help))
+                .setPositiveButton(getResources().getString(R.string.context_menu_edit_item),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                changeItem(position, data);
+                            }
+                        })
+                .setNegativeButton(getResources().getString(R.string.context_menu_delete_item),
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mAdapter.deleteItem(position);
+                            }
+                        })
+                .setNeutralButton(getResources().getString(R.string.context_menu_back), null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
     public class ListTabAdapter extends ArrayAdapter<String>{
 
         LayoutInflater mInflater;
@@ -126,6 +165,11 @@ public class ListTabFragment extends ListFragment implements DataListener{
            // Log.i(TAG,"insert into array position" + position);
          //   insert(newData, position);
             mArray.set(position, newData);
+            notifyDataSetChanged();
+        }
+
+        public void deleteItem(int position) {
+            mArray.remove(position);
             notifyDataSetChanged();
         }
 
@@ -162,8 +206,15 @@ public class ListTabFragment extends ListFragment implements DataListener{
                 v.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.i(TAG,"on click" + position);
-                        changeItem(position,textView.getText().toString());
+                        Log.i(TAG, "on click" + position);
+                        changeItem(position, textView.getText().toString());
+                    }
+                });
+                v.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        showContextMenu(textView.getText().toString(),position);
+                        return true;
                     }
                 });
                 return v;

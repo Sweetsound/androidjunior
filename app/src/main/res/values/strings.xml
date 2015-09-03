@@ -17,9 +17,15 @@
     <!--element_dialog_fragment-->
     <string name="done">Done</string>
     <string name="revert">Revert</string>
-
+    <string name="save_menu_help">Save changes?</string>
+    <string name="save_menu_save">Save</string>
+    <string name="save_menu_dismiss">Dismiss</string>
     <!--list_tab_fragment-->
     <string name="no_data">No data</string>
+    <string name="context_menu_help">Choose action</string>
+    <string name="context_menu_edit_item">Edit</string>
+    <string name="context_menu_delete_item">Delete</string>
+    <string name="context_menu_back">Back</string>
     
     <!--list_item-->
     <string name="item_desc">Y.O.B.A</string>

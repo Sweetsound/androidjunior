@@ -66,7 +66,6 @@ public class MapTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_map_tab, container, false);
-        ((TextView) v.findViewById(R.id.text2)).setText("14124");
         return v;
     }
 
