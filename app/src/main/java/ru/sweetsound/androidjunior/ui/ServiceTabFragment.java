@@ -1,88 +1,99 @@
 package ru.sweetsound.androidjunior.ui;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import ru.sweetsound.androidjunior.R;
 
-/**
- * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link ServiceTabFragment.OnFragmentInteractionListener} interface
- * to handle interaction events.
- * Use the {@link ServiceTabFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ServiceTabFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ServiceTabFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ServiceTabFragment newInstance(String param1, String param2) {
-        ServiceTabFragment fragment = new ServiceTabFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    public ServiceTabFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
+    private final static String URI_PATH = "http://storage.space-o.ru/testXmlFeed.xml";
+    private boolean isRequesting = false;
+    private ProgressDialog mProgressDialog = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_service_tab, container, false);
+        View v = inflater.inflate(R.layout.fragment_service_tab, container, false);
+        setRetainInstance(true);
+        v.findViewById(R.id.getdata).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getXMLData(URI_PATH);
+            }
+        });
+        return v;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(Uri uri);
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
     }
 
+    private void getXMLData(final String path){
+        mProgressDialog = new ProgressDialog(getContext());
+        String result = null;
+        new UriAsyncTask().execute(URI_PATH,null,result);
+    }
+
+    private void hideDialog(){
+    mProgressDialog.hide();
+    }
+
+
+    private class UriAsyncTask extends AsyncTask<String,Void,String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            Log.i("RESPONSE","START");
+            try {
+                Thread.sleep(5000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            StringBuilder builder = new StringBuilder();
+            URL url = null;
+            HttpURLConnection urlConnection = null;
+            try {
+                url = new URL(params[0]);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+            }
+            try {
+
+                urlConnection = (HttpURLConnection) url.openConnection();
+                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
+                byte[] buffer = new byte[1024];
+                while (in.read(buffer, 0, 1024) != -1) {
+                    builder.append(new String(buffer));
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            } finally {
+                if (urlConnection != null) urlConnection.disconnect();
+                Log.i("RESPONSE","END");
+        }
+            return builder.toString();
+    }
+        public void onPostExecute(String result){
+            hideDialog();
+        }
+
+}
 }
