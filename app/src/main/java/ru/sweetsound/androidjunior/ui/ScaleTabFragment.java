@@ -9,6 +9,7 @@ import android.media.Image;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -20,24 +21,30 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import java.io.File;
 import java.io.FileDescriptor;
 import java.io.IOException;
 import java.lang.annotation.Target;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import ru.sweetsound.androidjunior.R;
 
 
 public class ScaleTabFragment extends Fragment {
 
-    private static int GALLERY_IMAGE = 1;
-    private ImageView imgView;
+    private final static int GALLERY_IMAGE = 1;
+    public final static int CAMERA_IMAGE = 2;
+    private final static String TYPE_IMAGE = "image/*";
+    private final static String FILE_IMAGE = "image";
+    private File mFile;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scale_tab, container, false);
-        imgView = (ImageView) view.findViewById(R.id.imgView);
-        ((ImageButton) view.findViewById(R.id.open_gallery))
+        (view.findViewById(R.id.open_gallery))
                 .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,7 +52,7 @@ public class ScaleTabFragment extends Fragment {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                     galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
-                    galleryIntent.setType("image/*");
+                    galleryIntent.setType(TYPE_IMAGE);
                 } else {
                     galleryIntent = new Intent(Intent.ACTION_PICK,
                             android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
@@ -53,11 +60,24 @@ public class ScaleTabFragment extends Fragment {
                 startActivityForResult(galleryIntent, GALLERY_IMAGE);
             }
                 });
-        ((ImageButton) view.findViewById(R.id.take_photo))
+        (view.findViewById(R.id.take_photo))
                 .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //T0D0 camera shot
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                File f = getActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+                try {
+                    mFile = File.createTempFile(
+                            FILE_IMAGE,  /* prefix */
+                            ".jpg",         /* suffix */
+                            f    /* directory */
+                    );
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mFile));
+                    startActivityForResult(takePictureIntent, CAMERA_IMAGE);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         return view;
@@ -66,7 +86,6 @@ public class ScaleTabFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        try {
             // When an Image is picked
             if (requestCode == GALLERY_IMAGE
                     && resultCode == Activity.RESULT_OK
@@ -78,15 +97,16 @@ public class ScaleTabFragment extends Fragment {
                 intent.putExtra(ImageActivity.EXTRA_IMAGE,selectedImage);
                 startActivity(intent);
 
-            } else {
-                Toast.makeText(getContext(), "You haven't picked Image", Toast.LENGTH_LONG).show();
             }
-        } catch (Exception e) {
-            Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
-    }
+            if (requestCode == CAMERA_IMAGE
+                    && resultCode == Activity.RESULT_OK) {
+                Uri selectedImage = Uri.fromFile(mFile);
+                Intent intent = new Intent(getActivity(),ImageActivity.class);
+                intent.putExtra(ImageActivity.EXTRA_IMAGE,selectedImage);
+                startActivity(intent);
 
+            }
+    }
 
 
 
