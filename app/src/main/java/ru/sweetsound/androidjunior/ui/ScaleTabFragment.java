@@ -3,17 +3,26 @@ package ru.sweetsound.androidjunior.ui;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.Image;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import java.io.FileDescriptor;
+import java.io.IOException;
+import java.lang.annotation.Target;
 
 import ru.sweetsound.androidjunior.R;
 
@@ -28,16 +37,23 @@ public class ScaleTabFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_scale_tab, container, false);
         imgView = (ImageView) view.findViewById(R.id.imgView);
-        ((ImageView) view.findViewById(R.id.open_gallery))
+        ((ImageButton) view.findViewById(R.id.open_gallery))
                 .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent galleryIntent = new Intent(Intent.ACTION_PICK,
-                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                Intent galleryIntent;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    galleryIntent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                    galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                    galleryIntent.setType("image/*");
+                } else {
+                    galleryIntent = new Intent(Intent.ACTION_PICK,
+                            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                }
                 startActivityForResult(galleryIntent, GALLERY_IMAGE);
             }
                 });
-        ((ImageView) view.findViewById(R.id.take_photo))
+        ((ImageButton) view.findViewById(R.id.take_photo))
                 .setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,24 +74,9 @@ public class ScaleTabFragment extends Fragment {
                 // Get the Image from data
 
                 Uri selectedImage = data.getData();
-                //Intent intent = new Intent(getActivity(),ImageActivity.class);
-                //intent.putExtra(ImageActivity.EXTRA_IMAGE,selectedImage);
-                //startActivity(intent);
-                String[] filePathColumn = { MediaStore.Images.Media.DATA };
-
-                // Get the cursor
-                Cursor cursor = getActivity().getContentResolver().query(selectedImage,
-                        filePathColumn, null, null, null);
-                // Move to first row
-                cursor.moveToFirst();
-
-                int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-                String imgDecodableString = cursor.getString(columnIndex);
-                cursor.close();
-
-                // Set the Image in ImageView after decoding the String
-                imgView.setImageBitmap(BitmapFactory
-                        .decodeFile(imgDecodableString));
+                Intent intent = new Intent(getActivity(),ImageActivity.class);
+                intent.putExtra(ImageActivity.EXTRA_IMAGE,selectedImage);
+                startActivity(intent);
 
             } else {
                 Toast.makeText(getContext(), "You haven't picked Image", Toast.LENGTH_LONG).show();
@@ -84,7 +85,6 @@ public class ScaleTabFragment extends Fragment {
             Toast.makeText(getContext(), "Something went wrong", Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
-
     }
 
 
