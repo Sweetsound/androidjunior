@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Handler;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
@@ -17,11 +18,11 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
-
 import ru.sweetsound.androidjunior.R;
 
 /**
@@ -29,6 +30,7 @@ import ru.sweetsound.androidjunior.R;
  */
 public class ImageActivityFragment extends Fragment {
     private ImageView mImage;
+    private Button mZoomInBtn,mZoomOutBtn;
 
     private final String TAG = "ImageActivityFragment";
     private Matrix matrix = new Matrix();
@@ -42,12 +44,9 @@ public class ImageActivityFragment extends Fragment {
     private PointF start = new PointF();
     private PointF mid = new PointF();
     private float oldDist = 1f;
-    private float d = 0f;
-    private float newRot = 0f;
-    private float[] lastEvent = null;
-    //remember image data
-    //constants
-    private final float minZoom = (float) 0.1;
+
+    //constraint the minimal zoom we can have
+    private final float MINZOOM = (float) 0.1;
 
 
     public ImageActivityFragment() {
@@ -58,6 +57,8 @@ public class ImageActivityFragment extends Fragment {
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_image, container, false);
         mImage = (ImageView) v.findViewById(R.id.image);
+        mZoomInBtn = (Button) v.findViewById(R.id.button_zoom_in);
+        mZoomOutBtn = (Button) v.findViewById(R.id.button_zoom_out);
         return v;
     }
 
@@ -70,12 +71,76 @@ public class ImageActivityFragment extends Fragment {
         mImage.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.i(TAG,"touched event=" + event.toString());
-                touchProcess(v,event);
-                return false;
+                Log.i(TAG, "touched event=" + event.toString());
+                touchProcess(v, event);
+                return true;
             }
         });
+        mZoomInBtn.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler = null;
+            private float STANDARD_ZOOM = (float) 10/9;
+            private long STANDARD_DELAY = 500;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                    if (mHandler != null) return true;
+                    mHandler = new Handler();
+                    mHandler.postDelayed(mAction, STANDARD_DELAY);
+                    break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return true;
+            }
+
+            Runnable mAction = new Runnable() {
+                @Override
+                public void run() {
+                    matrix.postScale(STANDARD_ZOOM, STANDARD_ZOOM);
+                    mImage.setImageMatrix(matrix);
+                    mHandler.postDelayed(this,STANDARD_DELAY);
+                }
+            };
+    });
+        mZoomOutBtn.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler = null;
+            private float STANDARD_ZOOM = (float) 9/10;
+            private long STANDARD_DELAY = 500;
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, STANDARD_DELAY);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return true;
+            }
+
+            Runnable mAction = new Runnable() {
+                @Override
+                public void run() {
+                    matrix.postScale(STANDARD_ZOOM, STANDARD_ZOOM);
+                    mImage.setImageMatrix(matrix);
+                    mHandler.postDelayed(this,STANDARD_DELAY);
+                }
+            };
+        });
+
     }
+
+
+
 
     private Bitmap getBitmapFromUri(Uri uri) {
         ParcelFileDescriptor parcelFileDescriptor = null;
@@ -107,7 +172,6 @@ public class ImageActivityFragment extends Fragment {
                 Log.i(TAG, "ACTION_DOWN");
                 start.set(event.getX(), event.getY());
                 mode = DRAG;
-                lastEvent = null;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
                 Log.i(TAG,"ACTION_POINTER_DOWN");
@@ -117,64 +181,43 @@ public class ImageActivityFragment extends Fragment {
                     midPoint(mid, event);
                     mode = ZOOM;
                 }
-                lastEvent = new float[4];
-                lastEvent[0] = event.getX(0);
-                lastEvent[1] = event.getX(1);
-                lastEvent[2] = event.getY(0);
-                lastEvent[3] = event.getY(1);
-                d = rotation(event);
                 break;
             case MotionEvent.ACTION_UP:
-                Log.i(TAG,"ACTION_UP");
 
             case MotionEvent.ACTION_POINTER_UP:
-                Log.i(TAG,"ACTION_POINTER_UP");
                 mode = NONE;
-                lastEvent = null;
                 break;
             case MotionEvent.ACTION_MOVE:
-                Log.i(TAG,"ACTION_MOVE");
                 if (mode == DRAG) {
-                    Log.i(TAG,"DRAG");
                     matrix.set(savedMatrix);
                     float dx = event.getX() - start.x;
                     float dy = event.getY() - start.y;
-                    Log.i(TAG,"postTranslate");
                     matrix.postTranslate(dx, dy);
-                    // moveButtons(Math.round(dx),Math.round(dy));
                 } else if (mode == ZOOM) {
-                    Log.i(TAG,"ZOOM");
                     float newDist = spacing(event);
                     if (newDist > 10f) {
                         matrix.set(savedMatrix);
                         float scale = (newDist / oldDist);
                         float[] values = new float[9];
                         matrix.getValues(values);
-                        if (!(scale < 1)||!(scale * values[0] < minZoom)) {
-                            Log.i(TAG,"postScale");
+                        if (!(scale < 1)||!(scale * values[0] < MINZOOM)) {
                             matrix.postScale(scale, scale, mid.x, mid.y);
                         }
-                    }
-                    if (lastEvent != null && event.getPointerCount() == 3) {
-                        newRot = rotation(event);
-                        float r = newRot - d;
-                        float[] values = new float[9];
-                        matrix.getValues(values);
-                        float tx = values[2];
-                        float ty = values[5];
-                        float sx = values[0];
-                        float xc = (view.getWidth() / 2) * sx;
-                        float yc = (view.getHeight() / 2) * sx;
-                        Log.i(TAG,"postRotate");
-                        matrix.postRotate(r, tx + xc, ty + yc);
                     }
                 }
                 break;
         }
-        Log.i(TAG,"setImageMatrix");
         view.setImageMatrix(matrix);
         float[] values = new float[9];
         matrix.getValues(values);
+    }
+
+    private void scaleMatrix(Matrix matrix, float scale) {
+        matrix.postScale(scale,scale);
+    }
+
+    private void zoom(MotionEvent event){
+
     }
 
     private float spacing(MotionEvent event) {
@@ -193,11 +236,4 @@ public class ImageActivityFragment extends Fragment {
         point.set(x / 2, y / 2);
     }
 
-
-    private float rotation(MotionEvent event) {
-        double delta_x = (event.getX(0) - event.getX(1));
-        double delta_y = (event.getY(0) - event.getY(1));
-        double radians = Math.atan2(delta_y, delta_x);
-        return (float) Math.toDegrees(radians);
-    }
 }
