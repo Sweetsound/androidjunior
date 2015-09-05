@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ProgressBar;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -23,15 +25,22 @@ import ru.sweetsound.androidjunior.R;
 public class ServiceTabFragment extends Fragment {
 
     private final static String URI_PATH = "http://storage.space-o.ru/testXmlFeed.xml";
+    private ProgressDialog mProgressDialog;
     private boolean isRequesting = false;
-    private ProgressDialog mProgressDialog = null;
+    private Button mButton;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_service_tab, container, false);
-        setRetainInstance(true);
-        v.findViewById(R.id.getdata).setOnClickListener(new View.OnClickListener() {
+        mButton = (Button) v.findViewById(R.id.getdata);
+        mButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getXMLData(URI_PATH);
@@ -43,17 +52,18 @@ public class ServiceTabFragment extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        mProgressDialog = new ProgressDialog(getActivity());
+        if (isRequesting) mProgressDialog.show();
     }
 
     private void getXMLData(final String path){
-        mProgressDialog = new ProgressDialog(getContext());
+        isRequesting = true;
+        mProgressDialog.show();
         String result = null;
-        new UriAsyncTask().execute(URI_PATH,null,result);
+        new UriAsyncTask().execute(path,null,result);
     }
 
-    private void hideDialog(){
-    mProgressDialog.hide();
-    }
+
 
 
     private class UriAsyncTask extends AsyncTask<String,Void,String> {
@@ -92,7 +102,8 @@ public class ServiceTabFragment extends Fragment {
             return builder.toString();
     }
         public void onPostExecute(String result){
-            hideDialog();
+            isRequesting = false;
+            mProgressDialog.hide();
         }
 
 }
