@@ -16,13 +16,15 @@
         android:layout_alignParentLeft="true"/>
     <TextView
         android:id="@+id/item_text"
-        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/list_yoba"
-        android:layout_toRightOf="@id/list_yoba"/>
+        android:layout_toRightOf="@id/list_yoba"
+        android:layout_toLeftOf="@+id/list_checkbox"
+        android:layout_toStartOf="@id/list_checkbox"/>
     <CheckBox
-        android:id="@+id/list_checkbox"
+        android:id="@id/list_checkbox"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

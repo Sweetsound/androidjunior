@@ -20,8 +20,10 @@ import android.widget.TextView;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -74,6 +76,7 @@ public class ServiceTabFragment extends ListFragment {
 
     private void addDataToList(String xml) {
         ArrayList<Quote> list = null;
+        Log.i("RESPONSE",xml);
         try {
              list = new ServiceXMLParser().parseResult(xml);
         } catch (XmlPullParserException | IOException e) {
@@ -101,7 +104,6 @@ public class ServiceTabFragment extends ListFragment {
 
         @Override
         public View getView(final int position, final View convertView, ViewGroup parent) {
-        if (convertView == null) {
             View v = mInflater.inflate(mResource,parent,false);
             TextView text = (TextView) v.findViewById(R.id.item_text);
             text.setText(getItem(position).getText() != null? getItem(position).getText() :
@@ -113,8 +115,6 @@ public class ServiceTabFragment extends ListFragment {
             id.setText(getItem(position).getId() != null? getItem(position).getId() :
                 getResources().getString(R.string.no_info));
             return v;
-            }
-        return convertView;
         }
     }
 
@@ -133,12 +133,12 @@ public class ServiceTabFragment extends ListFragment {
             }
             if (url!=null) {
                 try {
-
                     urlConnection = (HttpURLConnection) url.openConnection();
-                    InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                    byte[] buffer = new byte[1024];
-                    while (in.read(buffer, 0, 1024) != -1) {
-                        builder.append(new String(buffer));
+                    BufferedReader in = new BufferedReader(
+                            new InputStreamReader(urlConnection.getInputStream()));
+                    String buffer;
+                    while ((buffer = in.readLine()) != null) {
+                        builder.append(buffer);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -147,11 +147,13 @@ public class ServiceTabFragment extends ListFragment {
                     if (urlConnection != null) urlConnection.disconnect();
                     Log.i("RESPONSE", "END");
                 }
+                Log.i("RESPONSE0",builder.toString());
                 return builder.toString();
             }
             return null;
     }
         public void onPostExecute(String result){
+            super.onPostExecute(result);
             isRequesting = false;
             mProgressDialog.hide();
             addDataToList(result);
