@@ -145,13 +145,11 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
     public class ListTabAdapter extends ArrayAdapter<String>{
 
-        LayoutInflater mInflater;
         private Context mContext;
         private ArrayList<String> mArray;
 
         public ListTabAdapter(Context context, int resource, int textViewResourceId, ArrayList<String> array) {
             super(context, resource, textViewResourceId, array);
-            mInflater = LayoutInflater.from(context);
             mContext = context;
             mArray = array;
         }
