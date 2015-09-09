@@ -76,7 +76,6 @@ public class ServiceTabFragment extends ListFragment {
 
     private void addDataToList(String xml) {
         ArrayList<Quote> list = null;
-        Log.i("RESPONSE",xml);
         try {
              list = new ServiceXMLParser().parseResult(xml);
         } catch (XmlPullParserException | IOException e) {
@@ -103,26 +102,41 @@ public class ServiceTabFragment extends ListFragment {
         }
 
         @Override
-        public View getView(final int position, final View convertView, ViewGroup parent) {
-            View v = mInflater.inflate(mResource,parent,false);
-            TextView text = (TextView) v.findViewById(R.id.item_text);
-            text.setText(getItem(position).getText() != null? getItem(position).getText() :
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = mInflater.inflate(mResource, parent, false);
+                holder = new ViewHolder();
+                holder.text = (TextView) convertView.findViewById(R.id.item_text);
+                holder.date = (TextView) convertView.findViewById(R.id.item_date);
+                holder.id = (TextView) convertView.findViewById(R.id.item_id);
+                convertView.setTag(holder);
+            }
+            else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.text.setText(getItem(position).getText() != null ? getItem(position).getText() :
                     getResources().getString(R.string.no_info));
-            TextView date = (TextView) v.findViewById(R.id.item_date);
-            date.setText(getItem(position).getDate() != null? getItem(position).getDate() :
+            holder.date.setText(getItem(position).getDate() != null ? getItem(position).getDate() :
                     getResources().getString(R.string.no_info));
-            TextView id = (TextView) v.findViewById(R.id.item_id);
-            id.setText(getItem(position).getId() != null? getItem(position).getId() :
-                getResources().getString(R.string.no_info));
-            return v;
+            holder.id.setText(getItem(position).getId() != null ? getItem(position).getId() :
+                    getResources().getString(R.string.no_info));
+            return convertView;
         }
+
+
+    }
+
+    private static class ViewHolder {
+        TextView text;
+        TextView id;
+        TextView date;
     }
 
     private class UriAsyncTask extends AsyncTask<String,Void,String> {
 
         @Override
         protected String doInBackground(String... params) {
-            Log.i("RESPONSE","START");
             StringBuilder builder = new StringBuilder();
             URL url = null;
             HttpURLConnection urlConnection = null;
@@ -145,9 +159,7 @@ public class ServiceTabFragment extends ListFragment {
                     return null;
                 } finally {
                     if (urlConnection != null) urlConnection.disconnect();
-                    Log.i("RESPONSE", "END");
                 }
-                Log.i("RESPONSE0",builder.toString());
                 return builder.toString();
             }
             return null;

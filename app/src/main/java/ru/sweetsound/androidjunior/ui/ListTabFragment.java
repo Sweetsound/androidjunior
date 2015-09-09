@@ -2,6 +2,7 @@ package ru.sweetsound.androidjunior.ui;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.media.Image;
 import android.os.Environment;
 import android.support.v4.app.ListFragment;
 import android.content.Context;
@@ -147,10 +148,12 @@ public class ListTabFragment extends ListFragment implements DataListener{
 
         private Context mContext;
         private ArrayList<String> mArray;
+        private int mResource;
 
         public ListTabAdapter(Context context, int resource, int textViewResourceId, ArrayList<String> array) {
             super(context, resource, textViewResourceId, array);
             mContext = context;
+            mResource = resource;
             mArray = array;
         }
 
@@ -174,14 +177,18 @@ public class ListTabFragment extends ListFragment implements DataListener{
         }
 
         @Override
-        public View getView(final int position, final View convertView, ViewGroup parent) {
-                final View v = super.getView(position,convertView,parent);
-                final TextView textView = (TextView) v.findViewById(R.id.item_text);
-                ((CheckBox) v.findViewById(R.id.list_checkbox))
-                        .setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final ViewHolder holder;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(mContext).inflate(mResource,parent,false);
+                holder = new ViewHolder();
+                holder.imageView = (ImageView) convertView.findViewById(R.id.list_yoba);
+                holder.textView = (TextView) convertView.findViewById(R.id.item_text);
+                holder.checkBox = ((CheckBox) convertView.findViewById(R.id.list_checkbox));
+                holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                ImageView image = (ImageView) v.findViewById(R.id.list_yoba);
+                                ImageView image = holder.imageView;
                                 if (isChecked)
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
                                         image.setImageDrawable(mContext.
@@ -196,24 +203,38 @@ public class ListTabFragment extends ListFragment implements DataListener{
                             }
                         });
 
-                v.setOnClickListener(new View.OnClickListener() {
+                convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Log.i(TAG, "on click" + position);
-                        changeItem(position, textView.getText().toString());
+                        Log.i(TAG, "on click" + holder.position);
+                        changeItem(holder.position, holder.textView.getText().toString());
                     }
                 });
-                v.setOnLongClickListener(new View.OnLongClickListener() {
+                convertView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        showContextMenu(textView.getText().toString(),position);
+                        showContextMenu(holder.textView.getText().toString(), position);
                         return true;
                     }
                 });
-                return v;
+                convertView.setTag(holder);
+            } else {
+                holder = (ViewHolder) convertView.getTag();
+            }
+            holder.position = position;
+            holder.textView.setText(mArray.get(holder.position));
+            return convertView;
         }
 
 
+
+    }
+
+    static class ViewHolder {
+        public ImageView imageView;
+        public TextView textView;
+        public CheckBox checkBox;
+        public int position;
 
     }
 

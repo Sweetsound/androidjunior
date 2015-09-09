@@ -3,7 +3,9 @@
     android:layout_height="match_parent"
     tools:context="ru.sweetsound.androidjunior.ui.MapTabFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+    <ru.yandex.yandexmapkit.MapView
+        android:id="@+id/map"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:apiKey="FMXNGRFnI31qKt6KeTWorxutuorKiraV8O95OSRpCLFmbJEiCEqemZ~Nu8fIv6M-OEhK~~XkvmhBrjs7qlZ9XfWqDdiMLsWxeWHBRfgxRls=" />
 </FrameLayout>

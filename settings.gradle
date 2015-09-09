@@ -1,1 +1,3 @@
+include ':yandexmapkitlibrary'
 include ':app'
+
