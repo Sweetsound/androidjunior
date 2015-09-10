@@ -1,18 +1,15 @@
 package ru.sweetsound.androidjunior.ui;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.ParcelFileDescriptor;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
-import android.os.Bundle;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -23,30 +20,29 @@ import android.widget.ImageView;
 
 import java.io.FileDescriptor;
 import java.io.IOException;
+
 import ru.sweetsound.androidjunior.R;
 
 /**
  * A placeholder fragment containing a simple view.
  */
 public class ImageActivityFragment extends Fragment {
-    private ImageView mImage;
-    private Button mZoomInBtn,mZoomOutBtn;
-
-    private final String TAG = "ImageActivityFragment";
-    private Matrix matrix = new Matrix();
-    private Matrix savedMatrix = new Matrix();
     // we can be in one of these 3 states
     private static final int NONE = 0;
     private static final int DRAG = 1;
     private static final int ZOOM = 2;
+    private final String TAG = "ImageActivityFragment";
+    //constraint the minimal zoom we can have
+    private final float MINZOOM = (float) 0.1;
+    private ImageView mImage;
+    private Button mZoomInBtn, mZoomOutBtn;
+    private Matrix matrix = new Matrix();
+    private Matrix savedMatrix = new Matrix();
     private int mode = NONE;
     // remember some things for zooming
     private PointF start = new PointF();
     private PointF mid = new PointF();
     private float oldDist = 1f;
-
-    //constraint the minimal zoom we can have
-    private final float MINZOOM = (float) 0.1;
 
 
     public ImageActivityFragment() {
@@ -78,38 +74,17 @@ public class ImageActivityFragment extends Fragment {
         });
         mZoomInBtn.setOnTouchListener(new View.OnTouchListener() {
             private Handler mHandler = null;
-            private float STANDARD_ZOOM = (float) 10/9;
+            private float STANDARD_ZOOM = (float) 10 / 9;
             private long STANDARD_DELAY = 500;
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                switch (event.getAction()) {
-                    case MotionEvent.ACTION_DOWN:
-                    if (mHandler != null) return true;
-                    mHandler = new Handler();
-                    mHandler.postDelayed(mAction, STANDARD_DELAY);
-                    break;
-                    case MotionEvent.ACTION_UP:
-                        if (mHandler == null) return true;
-                        mHandler.removeCallbacks(mAction);
-                        mHandler = null;
-                        break;
-                }
-                return true;
-            }
-
             Runnable mAction = new Runnable() {
                 @Override
                 public void run() {
                     matrix.postScale(STANDARD_ZOOM, STANDARD_ZOOM);
                     mImage.setImageMatrix(matrix);
-                    mHandler.postDelayed(this,STANDARD_DELAY);
+                    mHandler.postDelayed(this, STANDARD_DELAY);
                 }
             };
-    });
-        mZoomOutBtn.setOnTouchListener(new View.OnTouchListener() {
-            private Handler mHandler = null;
-            private float STANDARD_ZOOM = (float) 9/10;
-            private long STANDARD_DELAY = 500;
+
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 switch (event.getAction()) {
@@ -126,20 +101,39 @@ public class ImageActivityFragment extends Fragment {
                 }
                 return true;
             }
-
+        });
+        mZoomOutBtn.setOnTouchListener(new View.OnTouchListener() {
+            private Handler mHandler = null;
+            private float STANDARD_ZOOM = (float) 9 / 10;
+            private long STANDARD_DELAY = 500;
             Runnable mAction = new Runnable() {
                 @Override
                 public void run() {
                     matrix.postScale(STANDARD_ZOOM, STANDARD_ZOOM);
                     mImage.setImageMatrix(matrix);
-                    mHandler.postDelayed(this,STANDARD_DELAY);
+                    mHandler.postDelayed(this, STANDARD_DELAY);
                 }
             };
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                switch (event.getAction()) {
+                    case MotionEvent.ACTION_DOWN:
+                        if (mHandler != null) return true;
+                        mHandler = new Handler();
+                        mHandler.postDelayed(mAction, STANDARD_DELAY);
+                        break;
+                    case MotionEvent.ACTION_UP:
+                        if (mHandler == null) return true;
+                        mHandler.removeCallbacks(mAction);
+                        mHandler = null;
+                        break;
+                }
+                return true;
+            }
         });
 
     }
-
-
 
 
     private Bitmap getBitmapFromUri(Uri uri) {
@@ -174,7 +168,7 @@ public class ImageActivityFragment extends Fragment {
                 mode = DRAG;
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-                Log.i(TAG,"ACTION_POINTER_DOWN");
+                Log.i(TAG, "ACTION_POINTER_DOWN");
                 oldDist = spacing(event);
                 if (oldDist > 10f) {
                     savedMatrix.set(matrix);
@@ -200,7 +194,7 @@ public class ImageActivityFragment extends Fragment {
                         float scale = (newDist / oldDist);
                         float[] values = new float[9];
                         matrix.getValues(values);
-                        if (!(scale < 1)||!(scale * values[0] < MINZOOM)) {
+                        if (!(scale < 1) || !(scale * values[0] < MINZOOM)) {
                             matrix.postScale(scale, scale, mid.x, mid.y);
                         }
                     }
@@ -213,10 +207,10 @@ public class ImageActivityFragment extends Fragment {
     }
 
     private void scaleMatrix(Matrix matrix, float scale) {
-        matrix.postScale(scale,scale);
+        matrix.postScale(scale, scale);
     }
 
-    private void zoom(MotionEvent event){
+    private void zoom(MotionEvent event) {
 
     }
 

@@ -1,16 +1,12 @@
 package ru.sweetsound.androidjunior.utils;
 
-import org.xml.sax.InputSource;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class ServiceXMLParser {
@@ -25,7 +21,7 @@ public class ServiceXMLParser {
 
     private XmlPullParser mParser;
 
-    public ServiceXMLParser(){
+    public ServiceXMLParser() {
         try {
             XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
             factory.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
@@ -81,40 +77,44 @@ public class ServiceXMLParser {
             if (mParser.getEventType() != XmlPullParser.START_TAG) {
                 continue;
             }
-                String name = mParser.getName();
-                switch (name) {
-                    case TAG_TEXT: text=readText();
-                        break;
-                    case TAG_DATE: date = readDate();
-                        break;
-                    case TAG_ID: id = readId();
-                        break;
-                    default: skip();
-                        break;
-                }
+            String name = mParser.getName();
+            switch (name) {
+                case TAG_TEXT:
+                    text = readText();
+                    break;
+                case TAG_DATE:
+                    date = readDate();
+                    break;
+                case TAG_ID:
+                    id = readId();
+                    break;
+                default:
+                    skip();
+                    break;
             }
-        return new Quote(text,date,id);
         }
+        return new Quote(text, date, id);
+    }
 
 
     private String readText() throws IOException, XmlPullParserException {
-        mParser.require(XmlPullParser.START_TAG,null,TAG_TEXT);
+        mParser.require(XmlPullParser.START_TAG, null, TAG_TEXT);
         String text = readString();
-        mParser.require(XmlPullParser.END_TAG,null,TAG_TEXT);
+        mParser.require(XmlPullParser.END_TAG, null, TAG_TEXT);
         return text;
     }
 
     private String readId() throws IOException, XmlPullParserException {
-        mParser.require(XmlPullParser.START_TAG,null,TAG_ID);
+        mParser.require(XmlPullParser.START_TAG, null, TAG_ID);
         String id = readString();
-        mParser.require(XmlPullParser.END_TAG,null,TAG_ID);
+        mParser.require(XmlPullParser.END_TAG, null, TAG_ID);
         return id;
     }
 
     private String readDate() throws IOException, XmlPullParserException {
-        mParser.require(XmlPullParser.START_TAG,null,TAG_DATE);
+        mParser.require(XmlPullParser.START_TAG, null, TAG_DATE);
         String date = readString();
-        mParser.require(XmlPullParser.END_TAG,null,TAG_DATE);
+        mParser.require(XmlPullParser.END_TAG, null, TAG_DATE);
         return date;
     }
 

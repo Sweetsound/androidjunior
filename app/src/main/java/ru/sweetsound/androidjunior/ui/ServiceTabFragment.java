@@ -1,28 +1,21 @@
 package ru.sweetsound.androidjunior.ui;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import org.xmlpull.v1.XmlPullParserException;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
@@ -68,16 +61,16 @@ public class ServiceTabFragment extends ListFragment {
         if (isRequesting) mProgressDialog.show();
     }
 
-    private void getXMLData(final String path){
+    private void getXMLData(final String path) {
         isRequesting = true;
         mProgressDialog.show();
-        new UriAsyncTask().execute(path,null,null);
+        new UriAsyncTask().execute(path, null, null);
     }
 
     private void addDataToList(String xml) {
         ArrayList<Quote> list = null;
         try {
-             list = new ServiceXMLParser().parseResult(xml);
+            list = new ServiceXMLParser().parseResult(xml);
         } catch (XmlPullParserException | IOException e) {
             e.printStackTrace();
         }
@@ -89,12 +82,18 @@ public class ServiceTabFragment extends ListFragment {
         }
     }
 
+    private static class ViewHolder {
+        TextView text;
+        TextView id;
+        TextView date;
+    }
 
     private class ServiceListAdapter extends ArrayAdapter<Quote> {
 
 
         private LayoutInflater mInflater;
         private int mResource;
+
         public ServiceListAdapter(Context context, int resource, List<Quote> objects) {
             super(context, resource, objects);
             mResource = resource;
@@ -111,8 +110,7 @@ public class ServiceTabFragment extends ListFragment {
                 holder.date = (TextView) convertView.findViewById(R.id.item_date);
                 holder.id = (TextView) convertView.findViewById(R.id.item_id);
                 convertView.setTag(holder);
-            }
-            else {
+            } else {
                 holder = (ViewHolder) convertView.getTag();
             }
             holder.text.setText(getItem(position).getText() != null ? getItem(position).getText() :
@@ -127,13 +125,7 @@ public class ServiceTabFragment extends ListFragment {
 
     }
 
-    private static class ViewHolder {
-        TextView text;
-        TextView id;
-        TextView date;
-    }
-
-    private class UriAsyncTask extends AsyncTask<String,Void,String> {
+    private class UriAsyncTask extends AsyncTask<String, Void, String> {
 
         @Override
         protected String doInBackground(String... params) {
@@ -145,7 +137,7 @@ public class ServiceTabFragment extends ListFragment {
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             }
-            if (url!=null) {
+            if (url != null) {
                 try {
                     urlConnection = (HttpURLConnection) url.openConnection();
                     BufferedReader in = new BufferedReader(
@@ -163,13 +155,14 @@ public class ServiceTabFragment extends ListFragment {
                 return builder.toString();
             }
             return null;
-    }
-        public void onPostExecute(String result){
+        }
+
+        public void onPostExecute(String result) {
             super.onPostExecute(result);
             isRequesting = false;
             mProgressDialog.hide();
             addDataToList(result);
         }
 
-}
+    }
 }

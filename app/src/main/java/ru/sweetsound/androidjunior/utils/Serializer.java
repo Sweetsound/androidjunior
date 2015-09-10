@@ -1,19 +1,16 @@
 package ru.sweetsound.androidjunior.utils;
 
-import android.util.Log;
-
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 
 
 public class Serializer<T extends Serializable> {
 
-    public void serialize(String file, T target){
+    public void serialize(String file, T target) {
         ObjectOutputStream oos = null;
         FileOutputStream fos = null;
         try {
@@ -23,8 +20,7 @@ public class Serializer<T extends Serializable> {
             oos.flush();
         } catch (IOException e) {
             e.printStackTrace();
-        }
-        finally {
+        } finally {
             try {
                 if (oos != null)
                     oos.close();
@@ -41,15 +37,15 @@ public class Serializer<T extends Serializable> {
         FileInputStream fis = null;
         ObjectInputStream oin = null;
         try {
-             fis = new FileInputStream(file);
-             oin = new ObjectInputStream(fis);
-             result = (T) oin.readObject();
+            fis = new FileInputStream(file);
+            oin = new ObjectInputStream(fis);
+            result = (T) oin.readObject();
         } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         } finally {
             try {
-                if (fis!=null) fis.close();
-                if (oin!=null) oin.close();
+                if (fis != null) fis.close();
+                if (oin != null) oin.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }

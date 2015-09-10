@@ -2,11 +2,10 @@ package ru.sweetsound.androidjunior.ui;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.support.annotation.NonNull;
-import android.support.v4.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.annotation.NonNull;
+import android.support.v4.app.DialogFragment;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import ru.sweetsound.androidjunior.R;
 import ru.sweetsound.androidjunior.utils.DataListener;
 
 
-public class ElementDialogFragment extends DialogFragment implements DialogInterface.OnClickListener{
+public class ElementDialogFragment extends DialogFragment implements DialogInterface.OnClickListener {
 
     public final static String DATA_KEY = "data_key";
     public final static String POSITION_KEY = "position_key";
@@ -36,7 +35,7 @@ public class ElementDialogFragment extends DialogFragment implements DialogInter
         View v = inflater.inflate(R.layout.fragment_element_dialog, null);
         mEditText = (EditText) v.findViewById(R.id.dialog_edit);
         mInitText = EMPTY_TEXT;
-        if (bundle!=null && bundle.getString(DATA_KEY)!=null) {
+        if (bundle != null && bundle.getString(DATA_KEY) != null) {
             isNewEntry = false;
             mInitText = bundle.getString(DATA_KEY);
             mEditText.setText(bundle.getString(DATA_KEY));
@@ -61,7 +60,6 @@ public class ElementDialogFragment extends DialogFragment implements DialogInter
     }
 
 
-
     @Override
     public void onClick(DialogInterface dialog, int which) {
         switch (which) {
@@ -75,7 +73,7 @@ public class ElementDialogFragment extends DialogFragment implements DialogInter
     }
 
 
-    public void showConfirmation(){
+    public void showConfirmation() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setMessage(getResources().getString(R.string.save_menu_help))
                 .setPositiveButton(R.string.save_menu_save,
@@ -88,7 +86,7 @@ public class ElementDialogFragment extends DialogFragment implements DialogInter
 
                             }
                         })
-                .setNegativeButton(getResources().getString(R.string.save_menu_dismiss),null);
+                .setNegativeButton(getResources().getString(R.string.save_menu_dismiss), null);
         AlertDialog dialog = builder.create();
         dialog.show();
     }

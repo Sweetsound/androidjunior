@@ -1,13 +1,11 @@
 package ru.sweetsound.androidjunior.ui;
 
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.media.Image;
-import android.os.Environment;
-import android.support.v4.app.ListFragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -20,10 +18,8 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 import ru.sweetsound.androidjunior.R;
 import ru.sweetsound.androidjunior.utils.DataListener;
@@ -32,17 +28,20 @@ import ru.sweetsound.androidjunior.utils.Serializer;
 /**
  * A placeholder fragment containing a simple view.
  */
-public class ListTabFragment extends ListFragment implements DataListener{
+public class ListTabFragment extends ListFragment implements DataListener {
 
     public final static int LIST_FRAGMENT = 1;
     private final static String TAG = "ListTabFragment.java";
-    private String FILE_ARRAY;
+
     static {
 
     }
+
+    private String FILE_ARRAY;
     private ArrayList<String> mArray;
     private ListTabAdapter mAdapter;
     private Serializer<ArrayList<String>> mSerializer;
+
     public ListTabFragment() {
     }
 
@@ -76,7 +75,7 @@ public class ListTabFragment extends ListFragment implements DataListener{
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mSerializer = new Serializer<>();
-        FILE_ARRAY = getContext().getFilesDir().getAbsolutePath()+"/array";
+        FILE_ARRAY = getContext().getFilesDir().getAbsolutePath() + "/array";
         mArray = mSerializer.deserialize(FILE_ARRAY);
         if (mArray == null) mArray = new ArrayList<>();
         mAdapter = new ListTabAdapter(getActivity(),
@@ -88,12 +87,12 @@ public class ListTabFragment extends ListFragment implements DataListener{
     }
 
     @Override
-    public void onStop(){
+    public void onStop() {
         super.onStop();
         mSerializer.serialize(FILE_ARRAY, mArray);
     }
 
-    public void addItem(){
+    public void addItem() {
         ElementDialogFragment dialog = new ElementDialogFragment();
         dialog.setTargetFragment(this, LIST_FRAGMENT);
         dialog.show(getFragmentManager(), null);
@@ -122,7 +121,7 @@ public class ListTabFragment extends ListFragment implements DataListener{
     }
 
 
-    private void showContextMenu(final String data, final int position){
+    private void showContextMenu(final String data, final int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext())
                 .setMessage(getResources().getString(R.string.context_menu_help))
                 .setPositiveButton(getResources().getString(R.string.context_menu_edit_item),
@@ -144,7 +143,15 @@ public class ListTabFragment extends ListFragment implements DataListener{
         dialog.show();
     }
 
-    public class ListTabAdapter extends ArrayAdapter<String>{
+    static class ViewHolder {
+        public ImageView imageView;
+        public TextView textView;
+        public CheckBox checkBox;
+        public int position;
+
+    }
+
+    public class ListTabAdapter extends ArrayAdapter<String> {
 
         private Context mContext;
         private ArrayList<String> mArray;
@@ -157,9 +164,7 @@ public class ListTabFragment extends ListFragment implements DataListener{
             mArray = array;
         }
 
-        public void insertIntoArray(String newData, int position){
-           // Log.i(TAG,"insert into array position" + position);
-         //   insert(newData, position);
+        public void insertIntoArray(String newData, int position) {
             mArray.set(position, newData);
             notifyDataSetChanged();
         }
@@ -169,9 +174,7 @@ public class ListTabFragment extends ListFragment implements DataListener{
             notifyDataSetChanged();
         }
 
-        public void addToArray(String newData){
-         //   add(newData);
-         //   Log.i(TAG,"add to array");
+        public void addToArray(String newData) {
             mArray.add(newData);
             notifyDataSetChanged();
         }
@@ -180,28 +183,28 @@ public class ListTabFragment extends ListFragment implements DataListener{
         public View getView(final int position, View convertView, ViewGroup parent) {
             final ViewHolder holder;
             if (convertView == null) {
-                convertView = LayoutInflater.from(mContext).inflate(mResource,parent,false);
+                convertView = LayoutInflater.from(mContext).inflate(mResource, parent, false);
                 holder = new ViewHolder();
                 holder.imageView = (ImageView) convertView.findViewById(R.id.list_yoba);
                 holder.textView = (TextView) convertView.findViewById(R.id.item_text);
                 holder.checkBox = ((CheckBox) convertView.findViewById(R.id.list_checkbox));
                 holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                            @Override
-                            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                                ImageView image = holder.imageView;
-                                if (isChecked)
-                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                        image.setImageDrawable(mContext.
-                                                getDrawable(R.drawable.yoba_dissapointed));
-                                    else image.setImageDrawable(mContext.getResources().
-                                            getDrawable(R.drawable.yoba_dissapointed));
-                                else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                                    image.setImageDrawable(mContext.
-                                            getDrawable(R.drawable.yoba));
-                                else image.setImageDrawable(mContext.getResources().
-                                            getDrawable(R.drawable.yoba));
-                            }
-                        });
+                    @Override
+                    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                        ImageView image = holder.imageView;
+                        if (isChecked)
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                                image.setImageDrawable(mContext.
+                                        getDrawable(R.drawable.yoba_dissapointed));
+                            else image.setImageDrawable(mContext.getResources().
+                                    getDrawable(R.drawable.yoba_dissapointed));
+                        else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                            image.setImageDrawable(mContext.
+                                    getDrawable(R.drawable.yoba));
+                        else image.setImageDrawable(mContext.getResources().
+                                    getDrawable(R.drawable.yoba));
+                    }
+                });
 
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -226,15 +229,6 @@ public class ListTabFragment extends ListFragment implements DataListener{
             return convertView;
         }
 
-
-
-    }
-
-    static class ViewHolder {
-        public ImageView imageView;
-        public TextView textView;
-        public CheckBox checkBox;
-        public int position;
 
     }
 
